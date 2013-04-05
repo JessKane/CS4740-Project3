@@ -48,6 +48,24 @@ public class Emission {
 		return a / b;	
 	}
 	
+	/* Computes the most likely sentiment given a sentence based on its gathered features. */
+	public String findSentiment(ArrayList<String> sentence, ArrayList<String> pos) {
+		ArrayList<Double> sentProbs= new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0, 1.0));
+		String bestSentiment= "";
+		double bestProbability= 0;
+		for(int i= -2; i<=2; i++) {
+			for(int j= 0; j<=sentence.size(); j++) {
+				sentProbs.set(i+2, sentProbs.get(i+2)*calcProb(i+"", sentence.get(i+2), pos.get(i+2)));
+			}
+			if(sentProbs.get(i+2)>bestProbability) {
+				bestSentiment= i+"";
+				bestProbability= sentProbs.get(i+2);
+			}
+		}
+		
+		return bestSentiment;
+	}
+	
 	/* Sums all values in the collection. */
 	private double sum(Collection<Double> values) {
 		double sum= 0.0; 
