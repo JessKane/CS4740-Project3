@@ -36,16 +36,32 @@ public class Emission {
 	/* Returns the probability of the specified adjective, adverb, or gerund,
 	 *  given the desired sentiment and pos tag. */
 	public double calcProb(String sentiment, String pos, String word) {
-		int index= 0;
+		int index= 0; 
+		//Part of speech weight, to be taken from Constants
+		double posWeight= 0;
 		//Determines feature index given the word's pos. If unknown, defaults to 0
-		if (adj.contains(pos)) index= 0;
-		else if (adv.contains(pos)) index= 1;
-		else if (ger.contains(pos)) index= 2;
-		else return DEFAULT[index];
+		if (adj.contains(pos)) {
+			index= 0;
+			if (pos=="JJS") {
+				//Double-count superlative adjectives (best, coolest, etc.)
+				posWeight= 2*Constants.ADJ_MULT;
+			} else {
+				posWeight= Constants.ADJ_MULT;
+			}
+		}
+		else if (adv.contains(pos)) {
+			index= 1;
+			posWeight= Constants.ADV_MULT;
+		}
+		else if (ger.contains(pos)) {
+			index= 2;
+			posWeight= Constants.GER_MULT;
+		}
+		else return 1;
 		double b = sum(sentiments.get(sentiment).get(index).values());
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
-		return a / b;	
+		return posWeight * a / b;
 	}
 	
 	/* Computes the most likely sentiment given a sentence based on its gathered features. */
@@ -53,16 +69,18 @@ public class Emission {
 		ArrayList<Double> sentProbs= new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0, 1.0));
 		String bestSentiment= "";
 		double bestProbability= 0;
+		//Runs through all 5 sentiments
 		for(int i= -2; i<=2; i++) {
+			//Calculates sentence probability as multiplication of all word probabilities
 			for(int j= 0; j<=sentence.size(); j++) {
 				sentProbs.set(i+2, sentProbs.get(i+2)*calcProb(i+"", sentence.get(i+2), pos.get(i+2)));
 			}
+			//Updates best probability
 			if(sentProbs.get(i+2)>bestProbability) {
 				bestSentiment= i+"";
 				bestProbability= sentProbs.get(i+2);
 			}
 		}
-		
 		return bestSentiment;
 	}
 	
