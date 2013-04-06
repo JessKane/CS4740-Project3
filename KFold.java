@@ -18,7 +18,7 @@ public class KFold {
 			HashMap<ArrayList<String>, String> predicted = model.getResults();
 			d += check(correctSentiments, predicted);
 		}
-		System.out.println(d + "% accuracy");
+		System.out.println(d/5 + "% accuracy");
 	}
 	
 	public static Double check(HashMap<ArrayList<String>, String> checkedAgainst, HashMap<ArrayList<String>, String> fileToCheck) {
