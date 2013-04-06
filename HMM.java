@@ -36,13 +36,6 @@ public class HMM {
 	/* Train data location. */
 	public static String trainLoc= "./ScottRenshaw_train.txt";
 
-	/* Comment. */
-	public static void main(String[] args) {
-
-		HMM pt= new HMM(trainLoc);
-
-	}
-
 	/* Constructs a Parse object with transition frequencies */
 	public HMM(String trainLoc) {
 		readFile(trainLoc);
@@ -55,9 +48,7 @@ public class HMM {
 	 *  emission feature counts */
 	public ArrayList<ArrayList<ArrayList<ArrayList<String>>>> readFile(String fileLoc) {
 
-		// Lists of sentences and their pos's. If I did this right, ArrayList sentences should be constructed
-		// so that sentences.get(i) corresponds to sentiments.get(i). This might be useful for calculating
-		// emissions probabilities. If not, feel free to disregard.
+		// Lists of paragraphs and sentences
 		ArrayList<ArrayList<ArrayList<String>>> paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 		ArrayList<ArrayList<String>> sentences = new ArrayList<ArrayList<String>>();
 
@@ -199,9 +190,7 @@ public class HMM {
 	 * Parse the test data.
 	 */
 	public ArrayList<ArrayList<ArrayList<ArrayList<String>>>> parseTestData (String filename) {
-		// Lists of sentences and their pos's. If I did this right, ArrayList sentences should be constructed
-		// so that sentences.get(i) corresponds to sentiments.get(i). This might be useful for calculating
-		// emissions probabilities. If not, feel free to disregard.
+		// Lists of paragraphs and sentences
 		ArrayList<ArrayList<ArrayList<String>>> paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 		ArrayList<ArrayList<String>> sentences = new ArrayList<ArrayList<String>>();
 
@@ -263,7 +252,8 @@ public class HMM {
 
 				sentPos= new ArrayList<String>();
 				sentence= new ArrayList<String>();
-				//Sentiment value for current line
+				
+				// Sentiment value for current line
 				String sentiment= null;
 				// Stanford stuff
 				Annotation lineAnno= new Annotation(line);
@@ -281,8 +271,11 @@ public class HMM {
 						sentence.add(token.value());
 					}
 				}
-				sentiment= sentence.get(sentence.size()-2);
-				testSentiments.put(sentence, sentiment);
+				
+				// TODO: actually predict the sentiment
+				//sentiment= sentence.get(sentence.size()-2);
+				//testSentiments.put(sentence, sentiment);
+				
 				//Update sentiment tables
 				sentences.add(sentence);
 			}
@@ -298,5 +291,13 @@ public class HMM {
 			}	
 		}
 		return testDocuments;
+	}
+	
+	public HashMap<ArrayList<String>, String> getSentiments() {
+		return sentiments;
+	}
+	
+	public HashMap<ArrayList<String>, String> getResults() {
+		return testSentiments;
 	}
 }
