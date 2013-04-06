@@ -65,9 +65,9 @@ public class Emission {
 	}
 	
 	/* Computes the most likely sentiment given a sentence based on its gathered features. */
-	public String findSentiment(ArrayList<String> sentence, ArrayList<String> pos) {
+	public Double[] findSentiment(ArrayList<String> sentence, ArrayList<String> pos) {
 		ArrayList<Double> sentProbs= new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0, 1.0));
-		String bestSentiment= "";
+		Double bestSentiment=null;
 		double bestProbability= 0;
 		//Runs through all 5 sentiments
 		for(int i= -2; i<=2; i++) {
@@ -77,11 +77,12 @@ public class Emission {
 			}
 			//Updates best probability
 			if(sentProbs.get(i+2)>bestProbability) {
-				bestSentiment= i+"";
+				bestSentiment= (double)i;
 				bestProbability= sentProbs.get(i+2);
 			}
 		}
-		return bestSentiment;
+		Double[] result={bestSentiment, bestProbability};
+		return result;
 	}
 	
 	/* Sums all values in the collection. */
