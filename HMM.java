@@ -47,6 +47,53 @@ public class HMM {
 		sentimentModel(documents);
 		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
 		System.out.println(emissions.calcProb("-2","JJ","nice"));
+		viterbi(documents.get(0));
+	}
+
+	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review){
+		double[][] T1 = new double[5][review.size()];
+		double[][] T2 = new double[5][review.size()];
+		
+		
+		for (int i=-2; i<=2; i++){
+			T1[i][1]=findPercent(null,i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0))); //TODO remove nulls, see emails
+			T2[i][1]=0;
+		}
+		
+		double innerProb,innerArg,maxProb=-100,maxArg=-100;
+
+		for (int i=2; i<=review.size(); i++){
+			for (int j=-2; j<=2; j++){
+				for (int k=-2; k<=2; k++){
+					innerProb=T1[k][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
+					innerArg=k;
+					
+					if (innerProb>maxProb){
+						maxProb=innerProb;
+						maxArg=innerArg;
+					}
+				}
+				T1[j][i]=maxProb;
+				T2[j][i]=maxArg;
+			}
+		}
+		
+		for (int s=-2; s<=2; s++){
+			//testing
+		}
+		
+	}
+	
+	//Get the ith sentence in the document, avoiding paragraph mumbojumbo
+	private ArrayList<String> getSentence(ArrayList<ArrayList<ArrayList<String>>> review, int i) {
+		int count=0;
+		for (ArrayList<ArrayList<String>> para : review){
+			for (ArrayList<String> sent : para){
+				if (count==i) return sent;
+				count++;
+			}
+		}
+		return null;
 	}
 
 	/* Reads through the file and generates a sentiment bigram model, and updates
