@@ -6,6 +6,6 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 //		HMM renshaw = new HMM("data/ScottRenshaw_train");
-		HMM schwartz = new HMM("data/DennisSchwartz_test.txt");
+		HMM schwartz = new HMM("data/DennisSchwartz_train.txt");
 	}
 }
