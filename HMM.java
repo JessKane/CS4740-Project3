@@ -26,9 +26,14 @@ public class HMM {
 	/* List of strings = sentence. List of sentences = paragraph. List of paragraphs = review. List of reviews = entire document */
 	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> documents = null;
 	private HashMap<ArrayList<String>, String> sentiments = null;		// "full sentence":"sentiment"
+	private HashMap<ArrayList<String>, ArrayList<String>> POSs = null;		// "full sentence":"list of POSs"
+	private HashMap<ArrayList<String>, List<CoreLabel>> tokens = null;		// "full sentence":"list of tokens"
 
+	
 	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> testDocuments = null;
 	private HashMap<ArrayList<String>, String> testSentiments = null;		// "full sentence":"sentiment"
+	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = null;		// "full sentence":"list of POSs"
+	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = null;		// "full sentence":"list of tokens"
 
 
 	/* Stanford NLP modelling pipeline, used in annotation. */
@@ -91,9 +96,9 @@ public class HMM {
 				// Stanford stuff
 				Annotation lineAnno= new Annotation(line);
 				this.pipeline.annotate(lineAnno);
-				List<CoreLabel> tokens = lineAnno.get(TokensAnnotation.class);
+				List<CoreLabel> allTokens = lineAnno.get(TokensAnnotation.class);
 				// Iterate over all of the tokens on a line
-				for (CoreLabel token: tokens) {
+				for (CoreLabel token: allTokens) {
 					if (token.value().equals("{}")) {
 						// {} denotes a new paragraph
 						paragraphs.add(sentences);
@@ -106,6 +111,8 @@ public class HMM {
 				}
 				sentiment= sentence.get(sentence.size()-2);
 				sentiments.put(sentence, sentiment);
+				POSs.put(sentence, sentPos);
+				tokens.put(sentence, allTokens);
 				//Update sentiment tables
 				emissions.updTable(sentiment, sentence, sentPos);
 				sentences.add(sentence);
@@ -258,9 +265,9 @@ public class HMM {
 				// Stanford stuff
 				Annotation lineAnno= new Annotation(line);
 				this.pipeline.annotate(lineAnno);
-				List<CoreLabel> tokens = lineAnno.get(TokensAnnotation.class);
+				List<CoreLabel> allTokens = lineAnno.get(TokensAnnotation.class);
 				// Iterate over all of the tokens on a line
-				for (CoreLabel token: tokens) {
+				for (CoreLabel token: allTokens) {
 					if (token.value().equals("{}")) {
 						// {} denotes a new paragraph
 						paragraphs.add(sentences);
@@ -275,6 +282,8 @@ public class HMM {
 				// TODO: actually predict the sentiment
 				//sentiment= sentence.get(sentence.size()-2);
 				//testSentiments.put(sentence, sentiment);
+				//testPOSs.put(sentence, sentPos);
+				//testTokens.put(sentence, allTokens);
 				
 				//Update sentiment tables
 				sentences.add(sentence);
