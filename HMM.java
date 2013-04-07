@@ -336,11 +336,13 @@ public class HMM {
 				List<CoreLabel> allTokens = lineAnno.get(TokensAnnotation.class);
 				// Iterate over all of the tokens on a line
 				for (CoreLabel token: allTokens) {
-					if (token.value().equals("{}")) {
+					if (token.value().equals("-LCB-")) {
 						// {} denotes a new paragraph
 						paragraphs.add(sentences);
 						sentences = (ArrayList<ArrayList<String>>) sentences.clone();
 						sentences.clear();	
+					} else if (token.value().equals("-RCB-")) {
+						// do nothing
 					} else {
 						sentPos.add(token.tag());
 						sentence.add(token.value());
