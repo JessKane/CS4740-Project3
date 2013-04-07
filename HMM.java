@@ -38,13 +38,7 @@ public class HMM {
 
 	/* Stanford NLP modelling pipeline, used in annotation. */
 	protected StanfordCoreNLP pipeline;
-	/* Train data location. */
-	public static String trainLoc= "./train/ScottRenshaw_train.txt";
 
-	public static void main(String[] args) {
-		HMM model = new HMM(trainLoc);
-	}
-	
 	/* Constructs a Parse object with transition frequencies */
 	public HMM(String trainLoc) {
 		readFile(trainLoc);
@@ -123,11 +117,12 @@ public class HMM {
 
 		try{
 			br= new BufferedReader(new FileReader(fileLoc));
+			boolean firstParagraph = true;
 			while(true){
 				// Read current line, skipping over if a review header [xxxx/xx],
 				// and breaking the loop if the end has been reached
 				String line= br.readLine();
-				System.out.println(line.length() + " " + line);
+				//				System.out.println(line.length() + " " + line);
 
 				while(line.length()==0 || line.charAt(line.length()-1) != '>') {
 
@@ -136,13 +131,13 @@ public class HMM {
 					}
 					// If it's [xxxx/xx], switch documents
 					else if (line.charAt(line.length()-1) != '>') {
-						//if (!paragraphs.isEmpty()) {
+						if (firstParagraph) {
+							firstParagraph = false;
+						} else {
 							documents.add(paragraphs);
-							paragraphs = (ArrayList<ArrayList<ArrayList<String>>>) paragraphs.clone();
-							paragraphs.clear();
-							sentences = (ArrayList<ArrayList<String>>) sentences.clone();
-							sentences.clear();
-						//}
+							paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
+							sentences = new ArrayList<ArrayList<String>>();
+						}
 					} 
 					line= br.readLine();
 					if(line==null) break;
@@ -158,11 +153,14 @@ public class HMM {
 				List<CoreLabel> allTokens = lineAnno.get(TokensAnnotation.class);
 				// Iterate over all of the tokens on a line
 				for (CoreLabel token: allTokens) {
-					if (token.value().equals("{}")) {
+					if (token.value().equals("-LCB-")) {
 						// {} denotes a new paragraph
-						paragraphs.add(sentences);
-						sentences = (ArrayList<ArrayList<String>>) sentences.clone();
-						sentences.clear();	
+						if (sentences.size() != 0) {
+							paragraphs.add(sentences);
+							sentences = new ArrayList<ArrayList<String>>();
+						}
+					} else if (token.value().equals("-RCB-")) {
+						// do nothing...
 					} else {
 						sentPos.add(token.tag());
 						sentence.add(token.value());
@@ -191,13 +189,13 @@ public class HMM {
 	public void sentimentModel() {
 		for (ArrayList<ArrayList<ArrayList<String>>> review : documents) {
 			for (int i = 0; i < review.size(); i++) { // traversing review by paragraph
-				System.out.println("Paragraph " + i);
+				//				System.out.println("Paragraph " + i);
 				for (int j = 0; j < review.get(i).size(); j++) { // traversing paragraph by sentence
-					System.out.println("Sentence " + j);
+					//					System.out.println("Sentence " + j);
 					ArrayList<String> currSent = null;
 					ArrayList<String> nextSent = null;
 					if (i == review.size()-1 && j == review.get(i).size()-1) { // if last sentence of review
-						System.out.println(review.get(i));
+						//						System.out.println(review.get(i));
 						continue;
 					}
 					else if (j != review.get(i).size()-1) { // if not last sentence of a paragraph
@@ -288,6 +286,8 @@ public class HMM {
 		}		
 
 		if (br != null && out != null) {
+			boolean firstParagraph = true;
+
 			// Reads through the test file line by line
 			while(true) {
 
@@ -300,20 +300,20 @@ public class HMM {
 					e.printStackTrace();
 				}
 				while(line.length()==0 || line.charAt(line.length()-1) != '>') {
-					
+
 					if (line.length()==0) {
 						// do nothing
 					}
 
 					// If it's [xxxx/xx], switch documents
 					else if (line.charAt(line.length()-1) != '>') {
-						// if (!paragraphs.isEmpty()) {
+						if (firstParagraph) {
+							firstParagraph = false;
+						} else {
 							testDocuments.add(paragraphs);
-							paragraphs = (ArrayList<ArrayList<ArrayList<String>>>) paragraphs.clone();
-							paragraphs.clear();
-							sentences = (ArrayList<ArrayList<String>>) sentences.clone();
-							sentences.clear();
-						// }
+							paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
+							sentences = new ArrayList<ArrayList<String>>();
+						}
 					} 
 
 					try {
@@ -369,11 +369,11 @@ public class HMM {
 		}
 		return testDocuments;
 	}
-	
+
 	public HashMap<ArrayList<String>, String> getSentiments() {
 		return sentiments;
 	}
-	
+
 	public HashMap<ArrayList<String>, String> getResults() {
 		return testSentiments;
 	}
