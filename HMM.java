@@ -24,27 +24,33 @@ public class HMM {
 	private Emission emissions= new Emission();
 
 	/* List of strings = sentence. List of sentences = paragraph. List of paragraphs = review. List of reviews = entire document */
-	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> documents = null;
-	private HashMap<ArrayList<String>, String> sentiments = null;		// "full sentence":"sentiment"
-	private HashMap<ArrayList<String>, ArrayList<String>> POSs = null;		// "full sentence":"list of POSs"
-	private HashMap<ArrayList<String>, List<CoreLabel>> tokens = null;		// "full sentence":"list of tokens"
+	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> documents = new ArrayList<ArrayList<ArrayList<ArrayList<String>>>>();
+	private HashMap<ArrayList<String>, String> sentiments = new HashMap<ArrayList<String>, String>();		// "full sentence":"sentiment"
+	private HashMap<ArrayList<String>, ArrayList<String>> POSs = new HashMap<ArrayList<String>, ArrayList<String>>();		// "full sentence":"list of POSs"
+	private HashMap<ArrayList<String>, List<CoreLabel>> tokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
 
-	
-	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> testDocuments = null;
-	private HashMap<ArrayList<String>, String> testSentiments = null;		// "full sentence":"sentiment"
-	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = null;		// "full sentence":"list of POSs"
-	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = null;		// "full sentence":"list of tokens"
+
+	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> testDocuments = new ArrayList<ArrayList<ArrayList<ArrayList<String>>>>();
+	private HashMap<ArrayList<String>, String> testSentiments = new HashMap<ArrayList<String>, String>();		// "full sentence":"sentiment"
+	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = new HashMap<ArrayList<String>, ArrayList<String>>();		// "full sentence":"list of POSs"
+	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
 
 
 	/* Stanford NLP modelling pipeline, used in annotation. */
 	protected StanfordCoreNLP pipeline;
 	/* Train data location. */
-	public static String trainLoc= "./ScottRenshaw_train.txt";
+	public static String trainLoc= "./train/ScottRenshaw_train.txt";
 
+	public static void main(String[] args) {
+		HMM model = new HMM(trainLoc);
+	}
+	
 	/* Constructs a Parse object with transition frequencies */
 	public HMM(String trainLoc) {
 		readFile(trainLoc);
-		sentimentModel(documents);
+		System.out.println("documents size: " + documents.size());
+		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
+		sentimentModel();
 		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
 		System.out.println(emissions.calcProb("-2","JJ","nice"));
 		viterbi(documents.get(0));
@@ -53,13 +59,13 @@ public class HMM {
 	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review){
 		double[][] T1 = new double[5][review.size()];
 		double[][] T2 = new double[5][review.size()];
-		
-		
+
+
 		for (int i=-2; i<=2; i++){
 			T1[i][1]=findPercent(null,i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0))); //TODO remove nulls, see emails
 			T2[i][1]=0;
 		}
-		
+
 		double innerProb,innerArg,maxProb=-100,maxArg=-100;
 
 		for (int i=2; i<=review.size(); i++){
@@ -67,7 +73,7 @@ public class HMM {
 				for (int k=-2; k<=2; k++){
 					innerProb=T1[k][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
 					innerArg=k;
-					
+
 					if (innerProb>maxProb){
 						maxProb=innerProb;
 						maxArg=innerArg;
@@ -77,13 +83,13 @@ public class HMM {
 				T2[j][i]=maxArg;
 			}
 		}
-		
+
 		for (int s=-2; s<=2; s++){
 			//testing
 		}
-		
+
 	}
-	
+
 	//Get the ith sentence in the document, avoiding paragraph mumbojumbo
 	private ArrayList<String> getSentence(ArrayList<ArrayList<ArrayList<String>>> review, int i) {
 		int count=0;
@@ -121,16 +127,22 @@ public class HMM {
 				// Read current line, skipping over if a review header [xxxx/xx],
 				// and breaking the loop if the end has been reached
 				String line= br.readLine();
+				System.out.println(line.length() + " " + line);
 
 				while(line.length()==0 || line.charAt(line.length()-1) != '>') {
 
+					if (line.length()==0) {
+						// Do nothing
+					}
 					// If it's [xxxx/xx], switch documents
-					if (line.charAt(line.length()-1) != '>') {
-						documents.add(paragraphs);
-						paragraphs = (ArrayList<ArrayList<ArrayList<String>>>) paragraphs.clone();
-						paragraphs.clear();
-						sentences = (ArrayList<ArrayList<String>>) sentences.clone();
-						sentences.clear();					
+					else if (line.charAt(line.length()-1) != '>') {
+						//if (!paragraphs.isEmpty()) {
+							documents.add(paragraphs);
+							paragraphs = (ArrayList<ArrayList<ArrayList<String>>>) paragraphs.clone();
+							paragraphs.clear();
+							sentences = (ArrayList<ArrayList<String>>) sentences.clone();
+							sentences.clear();
+						//}
 					} 
 					line= br.readLine();
 					if(line==null) break;
@@ -172,17 +184,20 @@ public class HMM {
 
 		return documents;		
 	}
-	
+
 	/* Generates the sentiment bigrams, taking care to not treat last sentiment of a review + first sentiment of
 	 * the next review as one bigram
 	 */
-	public void sentimentModel(ArrayList<ArrayList<ArrayList<ArrayList<String>>>> sectionedTxt) {
-		for (ArrayList<ArrayList<ArrayList<String>>> review : sectionedTxt) {
+	public void sentimentModel() {
+		for (ArrayList<ArrayList<ArrayList<String>>> review : documents) {
 			for (int i = 0; i < review.size(); i++) { // traversing review by paragraph
+				System.out.println("Paragraph " + i);
 				for (int j = 0; j < review.get(i).size(); j++) { // traversing paragraph by sentence
+					System.out.println("Sentence " + j);
 					ArrayList<String> currSent = null;
 					ArrayList<String> nextSent = null;
 					if (i == review.size()-1 && j == review.get(i).size()-1) { // if last sentence of review
+						System.out.println(review.get(i));
 						continue;
 					}
 					else if (j != review.get(i).size()-1) { // if not last sentence of a paragraph
@@ -193,7 +208,7 @@ public class HMM {
 						currSent = review.get(i).get(j);
 						nextSent = review.get(i+1).get(0); // next sentence is first sentence of next paragraph
 					}
-					
+
 					String current = sentiments.get(currSent);
 					String next = sentiments.get(nextSent);
 					if (!transitions.containsKey(current)){
@@ -285,14 +300,20 @@ public class HMM {
 					e.printStackTrace();
 				}
 				while(line.length()==0 || line.charAt(line.length()-1) != '>') {
+					
+					if (line.length()==0) {
+						// do nothing
+					}
 
 					// If it's [xxxx/xx], switch documents
-					if (line.charAt(line.length()-1) != '>') {
-						testDocuments.add(paragraphs);
-						paragraphs = (ArrayList<ArrayList<ArrayList<String>>>) paragraphs.clone();
-						paragraphs.clear();
-						sentences = (ArrayList<ArrayList<String>>) sentences.clone();
-						sentences.clear();					
+					else if (line.charAt(line.length()-1) != '>') {
+						// if (!paragraphs.isEmpty()) {
+							testDocuments.add(paragraphs);
+							paragraphs = (ArrayList<ArrayList<ArrayList<String>>>) paragraphs.clone();
+							paragraphs.clear();
+							sentences = (ArrayList<ArrayList<String>>) sentences.clone();
+							sentences.clear();
+						// }
 					} 
 
 					try {
@@ -306,7 +327,7 @@ public class HMM {
 
 				sentPos= new ArrayList<String>();
 				sentence= new ArrayList<String>();
-				
+
 				// Sentiment value for current line
 				String sentiment= null;
 				// Stanford stuff
@@ -325,13 +346,13 @@ public class HMM {
 						sentence.add(token.value());
 					}
 				}
-				
+
 				// TODO: actually predict the sentiment
 				//sentiment= sentence.get(sentence.size()-2);
 				//testSentiments.put(sentence, sentiment);
 				//testPOSs.put(sentence, sentPos);
 				//testTokens.put(sentence, allTokens);
-				
+
 				//Update sentiment tables
 				sentences.add(sentence);
 			}
