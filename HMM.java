@@ -51,21 +51,22 @@ public class HMM {
 	}
 
 	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review){
-		double[][] T1 = new double[5][review.size()];
-		double[][] T2 = new double[5][review.size()];
+		double[][] T1 = new double[5][sentenceCount(review)];
+		double[][] T2 = new double[5][sentenceCount(review)];
 
 
 		for (int i=-2; i<=2; i++){
-			T1[i][1]=findPercent(null,i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0))); //TODO remove nulls, see emails
-			T2[i][1]=0;
+			T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0))); //TODO remove nulls, see emails
+			T2[i+2][0]=0;
 		}
 
 		double innerProb,innerArg,maxProb=-100,maxArg=-100;
 
-		for (int i=2; i<=review.size(); i++){
+		for (int i=1; i<sentenceCount(review); i++){
 			for (int j=-2; j<=2; j++){
+				maxProb=-100;maxArg=-100;
 				for (int k=-2; k<=2; k++){
-					innerProb=T1[k][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
+					innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
 					innerArg=k;
 
 					if (innerProb>maxProb){
@@ -73,15 +74,41 @@ public class HMM {
 						maxArg=innerArg;
 					}
 				}
-				T1[j][i]=maxProb;
-				T2[j][i]=maxArg;
+				T1[j+2][i]=maxProb;
+				T2[j+2][i]=maxArg;
 			}
 		}
 
+		innerProb=0;maxProb=0;maxArg=-100;innerArg=-100;
 		for (int s=-2; s<=2; s++){
-			//testing
+			innerProb=T1[s+2][sentenceCount(review)-1];
+			if (innerProb>maxProb){
+				maxProb=innerProb;
+				maxArg=s;
+			}
 		}
+		double[] prediction= new double[sentenceCount(review)];
+		prediction[sentenceCount(review)-1]=maxArg;
+		
+		for (int i=sentenceCount(review)-1;i>1;i--){
+			prediction[i-1]=T2[(int) prediction[i]+2][i];
+		}
+		print(prediction);
+	}
 
+	private void print(double[] prediction) {
+		for (Double i : prediction)
+			System.out.println(i);
+	}
+
+	private int sentenceCount(ArrayList<ArrayList<ArrayList<String>>> review) {
+		int count=0;
+		for (ArrayList<ArrayList<String>> para : review){
+			for (ArrayList<String> sent : para){
+				count++;
+			}
+		}
+		return count;
 	}
 
 	//Get the ith sentence in the document, avoiding paragraph mumbojumbo
@@ -243,6 +270,20 @@ public class HMM {
 		}
 
 		else return 0.0; 
+	}
+	
+	private double findPercent(String sentiment) {
+		return (double)sum(transitions.get(sentiment).values())/(double)sumInner(transitions);
+	}
+
+	private double sumInner( HashMap<String, HashMap<String, Double>> values) {
+		double sum= 0.0; 
+		for (HashMap<String, Double> i : values.values()){
+			for (Double j : i.values()){
+				sum = sum + j;
+			}
+		}
+		return sum;
 	}
 
 	/* Sums a collection. */
