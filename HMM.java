@@ -47,6 +47,15 @@ public class HMM {
 		sentimentModel();
 		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
 		System.out.println(emissions.calcProb("-2","JJ","nice"));
+		System.out.println();
+		int s=6;
+		System.out.println(emissions.sentProb(-2+"",getSentence(documents.get(0),s),POSs.get(getSentence(documents.get(0),s))));
+		System.out.println(emissions.sentProb(-1+"",getSentence(documents.get(0),s),POSs.get(getSentence(documents.get(0),s))));
+		System.out.println(emissions.sentProb(0+"",getSentence(documents.get(0),s),POSs.get(getSentence(documents.get(0),s))));
+		System.out.println(emissions.sentProb(1+"",getSentence(documents.get(0),s),POSs.get(getSentence(documents.get(0),s))));
+		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(0),s),POSs.get(getSentence(documents.get(0),s))));
+
+		System.out.println();
 		viterbi(documents.get(0));
 	}
 
