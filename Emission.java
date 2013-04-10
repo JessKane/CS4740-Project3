@@ -44,7 +44,7 @@ public class Emission {
 			index= 0;
 			if (pos=="JJS") {
 				//Double-count superlative adjectives (best, coolest, etc.)
-				posWeight= 2*Constants.ADJ_MULT;
+				posWeight= Constants.SUPER_MULT*Constants.ADJ_MULT;
 			} else {
 				posWeight= Constants.ADJ_MULT;
 			}
