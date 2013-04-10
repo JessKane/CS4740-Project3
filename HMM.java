@@ -56,16 +56,43 @@ public class HMM {
 		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 
 		System.out.println();
-		viterbi(documents.get(0));
+		for (ArrayList<ArrayList<ArrayList<String>>> i: documents){
+			viterbi(i,false);
+		}
+	}
+	
+	/* Constructs a Parse object with transition frequencies */
+	public HMM(String trainLoc, String testLoc) {
+		readFile(trainLoc);
+		sentimentModel();
+		parseTestData(testLoc);
+		/*System.out.println("documents size: " + documents.size());
+		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
+		sentimentModel();
+		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
+		System.out.println(emissions.calcProb("-2","JJ","nice"));
+		System.out.println();
+		int r=1,s=6;
+		System.out.println(emissions.sentProb(-2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
+		System.out.println(emissions.sentProb(-1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
+		System.out.println(emissions.sentProb(0+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
+		System.out.println(emissions.sentProb(1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
+		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
+
+		System.out.println();*/
+		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
+			viterbi(i,true);
+		}
 	}
 
-	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review){
+	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review, boolean isTest){
 		double[][] T1 = new double[5][sentenceCount(review)];
 		double[][] T2 = new double[5][sentenceCount(review)];
 
 
 		for (int i=-2; i<=2; i++){
-			T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0))); //TODO remove nulls, see emails
+			if (isTest) T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
+			else T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0)));
 			T2[i+2][0]=0;
 		}
 
@@ -75,7 +102,8 @@ public class HMM {
 			for (int j=-2; j<=2; j++){
 				maxProb=-100;maxArg=-100;
 				for (int k=-2; k<=2; k++){
-					innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
+					if (isTest) innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
+					else  innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
 					innerArg=k;
 
 					if (innerProb>maxProb){

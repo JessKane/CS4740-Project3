@@ -90,8 +90,7 @@ public class Emission {
 	public double sentProb(String sentiment, ArrayList<String> sentence, ArrayList<String> pos) {
 		double prob= 1;
 		for (int i= 0; i<sentence.size(); i++) {
-			System.out.println(calcProb(sentiment, pos.get(i), sentence.get(i)));
-			prob= -Math.log(prob)-Math.log(calcProb(sentiment, pos.get(i), sentence.get(i)));
+			prob= 10*prob*calcProb(sentiment, pos.get(i), sentence.get(i));
 		}
 		return prob;
 	}
