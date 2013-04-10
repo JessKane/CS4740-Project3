@@ -73,7 +73,7 @@ public class Emission {
 		for(int i= -2; i<=2; i++) {
 			//Calculates sentence probability as multiplication of all word probabilities
 			for(int j= 0; j<sentence.size(); j++) {
-				sentProbs.set(i+2, sentProbs.get(i+2)*calcProb(i+"", pos.get(j), sentence.get(j)));
+				sentProbs.set(i+2, -Math.log(sentProbs.get(i+2))-Math.log(calcProb(i+"", pos.get(j), sentence.get(j))));
 			}
 			//Updates best probability
 			if(sentProbs.get(i+2)>bestProbability) {
@@ -88,9 +88,8 @@ public class Emission {
 	/* Returns the probability of a sentence being the specified sentiment. */
 	public double sentProb(String sentiment, ArrayList<String> sentence, ArrayList<String> pos) {
 		double prob= 1;
-		int sent= Integer.parseInt(sentiment);
 		for (int i= 0; i<sentence.size(); i++) {
-			prob= prob*calcProb(sentiment, pos.get(i), sentence.get(i));
+			prob= -Math.log(prob)-Math.log(calcProb(sentiment, pos.get(i), sentence.get(i)));
 		}
 		return prob;
 	}
