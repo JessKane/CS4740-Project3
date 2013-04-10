@@ -40,7 +40,7 @@ public class HMM {
 	protected StanfordCoreNLP pipeline;
 
 	/* Constructs a Parse object with transition frequencies */
-	public HMM(String trainLoc String testLoc) {
+	public HMM(String trainLoc) {
 		readFile(trainLoc);
 		System.out.println("documents size: " + documents.size());
 		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
