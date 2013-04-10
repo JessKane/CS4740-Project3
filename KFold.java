@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class KFold {
   
 	public static void main(String[] args) {
-		HMM original = new HMM("./train/ScottRenshaw_train.txt");
+		/*HMM original = new HMM("./train/ScottRenshaw_train.txt");
 		HashMap<ArrayList<String>, String> correctSentiments = original.getSentiments();
 		Double d = 0.0;
 		String trainBase = "./validation/ScottRenshaw_train";
@@ -18,7 +18,7 @@ public class KFold {
 			HashMap<ArrayList<String>, String> predicted = model.getResults();
 			d += check(correctSentiments, predicted);
 		}
-		System.out.println(d/5 + "% accuracy");
+		System.out.println(d/5 + "% accuracy");*/
 	}
 	
 	public static Double check(HashMap<ArrayList<String>, String> checkedAgainst, HashMap<ArrayList<String>, String> fileToCheck) {

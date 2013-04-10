@@ -34,38 +34,20 @@ public class HMM {
 	private HashMap<ArrayList<String>, String> testSentiments = new HashMap<ArrayList<String>, String>();		// "full sentence":"sentiment"
 	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = new HashMap<ArrayList<String>, ArrayList<String>>();		// "full sentence":"list of POSs"
 	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
+	
+	private String outputFile;
 
 
 	/* Stanford NLP modelling pipeline, used in annotation. */
 	protected StanfordCoreNLP pipeline;
 
-	/* Constructs a Parse object with transition frequencies */
-	public HMM(String trainLoc) {
-		readFile(trainLoc);
-		System.out.println("documents size: " + documents.size());
-		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
-		sentimentModel();
-		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
-		System.out.println(emissions.calcProb("-2","JJ","nice"));
-		System.out.println();
-		int r=1,s=6;
-		System.out.println(emissions.sentProb(-2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
-		System.out.println(emissions.sentProb(-1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
-		System.out.println(emissions.sentProb(0+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
-		System.out.println(emissions.sentProb(1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
-		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 
-		System.out.println();
-		for (ArrayList<ArrayList<ArrayList<String>>> i: documents){
-			viterbi(i,false);
-		}
-	}
-	
 	/* Constructs a Parse object with transition frequencies */
-	public HMM(String trainLoc, String testLoc) {
+	public HMM(String trainLoc, String testLoc, String out) {
 		readFile(trainLoc);
 		sentimentModel();
 		parseTestData(testLoc);
+		outputFile=out;
 		/*System.out.println("documents size: " + documents.size());
 		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
 		sentimentModel();
@@ -81,18 +63,17 @@ public class HMM {
 
 		System.out.println();*/
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
-			viterbi(i,true);
+			viterbi(i);
 		}
 	}
 
-	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review, boolean isTest){
+	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review){
 		double[][] T1 = new double[5][sentenceCount(review)];
 		double[][] T2 = new double[5][sentenceCount(review)];
 
 
 		for (int i=-2; i<=2; i++){
-			if (isTest) T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
-			else T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), POSs.get(getSentence(review,0)));
+			T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
 			T2[i+2][0]=0;
 		}
 
@@ -102,8 +83,7 @@ public class HMM {
 			for (int j=-2; j<=2; j++){
 				maxProb=-100;maxArg=-100;
 				for (int k=-2; k<=2; k++){
-					if (isTest) innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
-					else  innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),POSs.get(getSentence(review,i)));
+					innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
 					innerArg=k;
 
 					if (innerProb>maxProb){
@@ -116,7 +96,7 @@ public class HMM {
 			}
 		}
 
-		innerProb=0;maxProb=0;maxArg=-100;innerArg=-100;
+		innerProb=0;maxProb=-100;maxArg=-100;innerArg=-100;
 		for (int s=-2; s<=2; s++){
 			innerProb=T1[s+2][sentenceCount(review)-1];
 			if (innerProb>maxProb){
@@ -130,13 +110,29 @@ public class HMM {
 		for (int i=sentenceCount(review)-1;i>1;i--){
 			prediction[i-1]=T2[(int) prediction[i]+2][i];
 		}
-		print(prediction);
+		//print(prediction);
+		write(prediction);
 	}
 
 	private void print(double[] prediction) {
 		for (Double i : prediction)
 			System.out.println(i);
 	}
+	
+	private void write(double[] prediction) {
+		try {
+			FileWriter outFile = new FileWriter(outputFile,true);
+			PrintWriter out = new PrintWriter(outFile);
+			
+			for (Double i : prediction){
+				out.println(i);
+			}
+			out.close();
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+		
 
 	private int sentenceCount(ArrayList<ArrayList<ArrayList<String>>> review) {
 		int count=0;
@@ -429,8 +425,8 @@ public class HMM {
 				// TODO: actually predict the sentiment
 				//sentiment= sentence.get(sentence.size()-2);
 				//testSentiments.put(sentence, sentiment);
-				//testPOSs.put(sentence, sentPos);
-				//testTokens.put(sentence, allTokens);
+				testPOSs.put(sentence, sentPos);
+				testTokens.put(sentence, allTokens);
 
 				//Update sentiment tables
 				sentences.add(sentence);

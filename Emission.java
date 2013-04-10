@@ -92,6 +92,7 @@ public class Emission {
 		for (int i= 0; i<sentence.size(); i++) {
 			prob= 10*prob*calcProb(sentiment, pos.get(i), sentence.get(i));
 		}
+		//System.out.println(prob);
 		return prob;
 	}
 	
