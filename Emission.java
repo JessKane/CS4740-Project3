@@ -61,10 +61,11 @@ public class Emission {
 		double b = sum(sentiments.get(sentiment).get(index).values());
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
+		if(a==0 && b==0) return 1;
 		return posWeight * a / b;
 	}
 	
-	/* Computes the most likely sentiment given a sentence based on its gathered features. */
+	/* Computes the most likely sentiment given a sentence based on its gathered features. 
 	public Double[] findSentiment(ArrayList<String> sentence, ArrayList<String> pos) {
 		ArrayList<Double> sentProbs= new ArrayList<Double>(Arrays.asList(1.0, 1.0, 1.0, 1.0, 1.0));
 		Double bestSentiment=null;
@@ -83,12 +84,13 @@ public class Emission {
 		}
 		Double[] result={bestSentiment, bestProbability};
 		return result;
-	}
+	} */
 	
 	/* Returns the probability of a sentence being the specified sentiment. */
 	public double sentProb(String sentiment, ArrayList<String> sentence, ArrayList<String> pos) {
 		double prob= 1;
 		for (int i= 0; i<sentence.size(); i++) {
+			System.out.println(calcProb(sentiment, pos.get(i), sentence.get(i)));
 			prob= -Math.log(prob)-Math.log(calcProb(sentiment, pos.get(i), sentence.get(i)));
 		}
 		return prob;
