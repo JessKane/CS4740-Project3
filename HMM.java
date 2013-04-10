@@ -417,8 +417,7 @@ public class HMM {
 					if (token.value().equals("-LCB-")) {
 						// {} denotes a new paragraph
 						paragraphs.add(sentences);
-						sentences = (ArrayList<ArrayList<String>>) sentences.clone();
-						sentences.clear();	
+						sentences = new ArrayList<ArrayList<String>>();
 					} else if (token.value().equals("-RCB-")) {
 						// do nothing
 					} else {
