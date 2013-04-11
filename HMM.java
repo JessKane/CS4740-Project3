@@ -56,20 +56,6 @@ public class HMM {
 		outputFile=out;
 		write(new double[0],false);
 
-		/*double summer=0;
-for (int q=-2;q<=2;q++){
-for(int w = -2; w<=2; w++){
-summer+=findPercent(w+"",q+"");
-}
-}
-System.out.println(summer);*/
-		/*System.out.println("documents size: " + documents.size());
-System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
-sentimentModel();
-System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
-System.out.println(emissions.calcProb("-2","JJ","nice"));
-System.out.println();
-		 */
 		int r=0,s=0;
 		System.out.println(emissions.sentProb(-2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 		System.out.println(emissions.sentProb(-1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
@@ -78,16 +64,6 @@ System.out.println();
 		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 
 		System.out.println();
-		/*int s=0;
-for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
-for (ArrayList<ArrayList<String>> para : i){
-for (ArrayList<String> sent : para){
-s++;
-}
-}
-}
-System.out.println("Test Sentences stored: "+s);*/
-
 		//BruteForce(testDocuments.get(0));
 		//for (String j : BEST_PATH){System.out.println(j);};
 		//System.out.println(BEST_PROB);
@@ -96,7 +72,7 @@ System.out.println("Test Sentences stored: "+s);*/
 			viterbi(i);
 		}
 		
-		
+		//Code for Collection Key Words for Different Sentiments
 //		System.out.println("All positive 2.\n");
 //		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("2").get(0).entrySet()) {
 //			if (entry.getValue() >= 5) {
@@ -508,7 +484,6 @@ System.out.println("Test Sentences stored: "+s);*/
 					}
 				}
 
-				// TODO: actually predict the sentiment
 				//sentiment= sentence.get(sentence.size()-2);
 				//testSentiments.put(sentence, sentiment);
 				testPOSs.put(sentence, sentPos);

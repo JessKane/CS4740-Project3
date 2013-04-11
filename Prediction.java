@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class Prediction{
@@ -220,7 +217,6 @@ public class Prediction{
 				numReview++;
 				line = br.readLine();
 				int numLines = 0;
-				int numParagraphs = 0;
 
 				ArrayList<Integer> sentences = null;  
 
@@ -386,34 +382,19 @@ public class Prediction{
 	}
 
 	public static int letter_to_score(String letter){
-		switch(letter){
-		case "a+":
-			return 12;
-		case "a":
-			return 11;
-		case "a-":
-			return 10;
-		case "b+":
-			return 9;
-		case "b":
-			return 8;
-		case "b-":
-			return 7;
-		case "c+":
-			return 6;
-		case "c":
-			return 5;
-		case "c-":
-			return 4;
-		case "d+":
-			return 3;
-		case "d":
-			return 2;
-		case "d-":
-			return 1;
-		case "f":
-			return 0;
-		}
+		if(letter.equals("a+"))return 12;
+		if(letter.equals( "a"))return 11;
+		if(letter.equals("a-"))return 10;
+		if(letter.equals("b+"))return 9;
+		if(letter.equals("b"))return 8;
+		if(letter.equals("b-"))return 7;
+		if(letter.equals("c+"))return 6;
+		if(letter.equals("c"))return 5;
+		if(letter.equals("c-"))return 4;
+		if(letter.equals("d+"))return 3;
+		if(letter.equals("d"))return 2;
+		if(letter.equals("d-"))return 1;
+		if(letter.equals("f"))return 0;
 		return 0;
 	}
 }
