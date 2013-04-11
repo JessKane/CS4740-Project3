@@ -34,7 +34,7 @@ public class HMM {
 	private HashMap<ArrayList<String>, String> testSentiments = new HashMap<ArrayList<String>, String>();		// "full sentence":"sentiment"
 	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = new HashMap<ArrayList<String>, ArrayList<String>>();		// "full sentence":"list of POSs"
 	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
-	
+
 	private String outputFile;
 
 
@@ -49,7 +49,7 @@ public class HMM {
 		parseTestData(testLoc);
 		outputFile=out;
 		write(new double[0],false);
-		
+
 		/*double summer=0;
 		for (int q=-2;q<=2;q++){
 			for(int w = -2; w<=2; w++){
@@ -128,7 +128,7 @@ public class HMM {
 		}
 		double[] prediction= new double[sentenceCount(review)];
 		prediction[sentenceCount(review)-1]=maxArg;
-		
+
 		for (int i=sentenceCount(review)-1;i>1;i--){
 			prediction[i-1]=T2[(int) prediction[i]+2][i];
 		}
@@ -145,12 +145,12 @@ public class HMM {
 		for (Double i : prediction)
 			System.out.println(i);
 	}
-	
+
 	private void write(double[] prediction, boolean append) {
 		try {
 			FileWriter outFile = new FileWriter(outputFile,append);
 			PrintWriter out = new PrintWriter(outFile);
-			
+
 			for (Double i : prediction){
 				out.println(i);
 			}
@@ -159,7 +159,7 @@ public class HMM {
 			e.printStackTrace();
 		}
 	}
-		
+
 
 	private int sentenceCount(ArrayList<ArrayList<ArrayList<String>>> review) {
 		int count=0;
@@ -332,7 +332,7 @@ public class HMM {
 
 		else return 0.0; 
 	}
-	
+
 	private double findPercent(String sentiment) {
 		return (double)sum(transitions.get(sentiment).values())/(double)sumInner(transitions);
 	}
@@ -475,11 +475,45 @@ public class HMM {
 		}
 		return testDocuments;
 	}
-
+	
+//	public ArrayList<String> recurse(String s, int sentenceNumber, int numSentences, ArrayList<ArrayList<ArrayList<String>>> review, Double runningProb, Double best, ArrayList<String >path) {
+//		ArrayList<String> sentence = getSentence(review, sentenceNumber);
+//		ArrayList<String> sentimentList = new ArrayList<String>();
+//		sentimentList.add("-2");
+//		sentimentList.add("-1");
+//		sentimentList.add("0");
+//		sentimentList.add("1");
+//		sentimentList.add("2");
+//		if (sentenceNumber == numSentences) {
+//			if (runningProb > best) {
+//				return path;
+//			}
+//			else return path;
+//		}
+//		else {
+//			for (String sentiment: sentimentList) {
+//				return runningProb * recurse(sentiment, sentenceNumber + 1, numSentences, review, runningProb, best);
+//			}
+//		}
+//	}
+//	
+//	public void BruteForce() {
+//		ArrayList<String> path = new ArrayList<String>();
+//		for (ArrayList<ArrayList<ArrayList<String>>> review : testDocuments) {
+//			Double best = 0.0;
+//			Double runningProb = findPercent(sentiments.get(getSentence(review, 0)));
+//			int numSentences = sentenceCount(review);
+//			int i = 0;
+//			Double prob = recurse(sentiments.get(getSentence(review, 0)), i, numSentences, review, runningProb, best);
+//		}
+//		
+//		
+//	}
+	
 	public HashMap<ArrayList<String>, String> getSentiments() {
 		return sentiments;
 	}
-
+	
 	public HashMap<ArrayList<String>, String> getResults() {
 		return testSentiments;
 	}
