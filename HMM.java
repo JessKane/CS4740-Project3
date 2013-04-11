@@ -25,18 +25,18 @@ public class HMM {
 
 	/* List of strings = sentence. List of sentences = paragraph. List of paragraphs = review. List of reviews = entire document */
 	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> documents = new ArrayList<ArrayList<ArrayList<ArrayList<String>>>>();
-	private HashMap<ArrayList<String>, String> sentiments = new HashMap<ArrayList<String>, String>();		// "full sentence":"sentiment"
-	private HashMap<ArrayList<String>, ArrayList<String>> POSs = new HashMap<ArrayList<String>, ArrayList<String>>();		// "full sentence":"list of POSs"
-	private HashMap<ArrayList<String>, List<CoreLabel>> tokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
+	private HashMap<ArrayList<String>, String> sentiments = new HashMap<ArrayList<String>, String>();	// "full sentence":"sentiment"
+	private HashMap<ArrayList<String>, ArrayList<String>> POSs = new HashMap<ArrayList<String>, ArrayList<String>>();	// "full sentence":"list of POSs"
+	private HashMap<ArrayList<String>, List<CoreLabel>> tokens = new HashMap<ArrayList<String>, List<CoreLabel>>();	// "full sentence":"list of tokens"
 
 
 	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> testDocuments = new ArrayList<ArrayList<ArrayList<ArrayList<String>>>>();
-	private HashMap<ArrayList<String>, String> testSentiments = new HashMap<ArrayList<String>, String>();		// "full sentence":"sentiment"
-	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = new HashMap<ArrayList<String>, ArrayList<String>>();		// "full sentence":"list of POSs"
-	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
+	private HashMap<ArrayList<String>, String> testSentiments = new HashMap<ArrayList<String>, String>();	// "full sentence":"sentiment"
+	private HashMap<ArrayList<String>, ArrayList<String>> testPOSs = new HashMap<ArrayList<String>, ArrayList<String>>();	// "full sentence":"list of POSs"
+	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = new HashMap<ArrayList<String>, List<CoreLabel>>();	// "full sentence":"list of tokens"
 
 	private String outputFile;
-	
+
 	private double BEST_PROB=-Double.MAX_VALUE;
 	private ArrayList<String> BEST_PATH = null;
 
@@ -54,19 +54,19 @@ public class HMM {
 		write(new double[0],false);
 
 		/*double summer=0;
-		for (int q=-2;q<=2;q++){
-			for(int w = -2; w<=2; w++){
-				summer+=findPercent(w+"",q+"");
-			}
-		}
-		System.out.println(summer);*/
+for (int q=-2;q<=2;q++){
+for(int w = -2; w<=2; w++){
+summer+=findPercent(w+"",q+"");
+}
+}
+System.out.println(summer);*/
 		/*System.out.println("documents size: " + documents.size());
-		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
-		sentimentModel();
-		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
-		System.out.println(emissions.calcProb("-2","JJ","nice"));
-		System.out.println();
-		*/
+System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
+sentimentModel();
+System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
+System.out.println(emissions.calcProb("-2","JJ","nice"));
+System.out.println();
+		 */
 		int r=0,s=0;
 		System.out.println(emissions.sentProb(-2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 		System.out.println(emissions.sentProb(-1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
@@ -76,15 +76,15 @@ public class HMM {
 
 		System.out.println();
 		/*int s=0;
-		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
-			for (ArrayList<ArrayList<String>> para : i){
-				for (ArrayList<String> sent : para){
-					s++;
-				}
-			}
-		}
-		System.out.println("Test Sentences stored: "+s);*/
-		
+for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
+for (ArrayList<ArrayList<String>> para : i){
+for (ArrayList<String> sent : para){
+s++;
+}
+}
+}
+System.out.println("Test Sentences stored: "+s);*/
+
 		//BruteForce(testDocuments.get(0));
 		//for (String j : BEST_PATH){System.out.println(j);};
 		//System.out.println(BEST_PROB);
@@ -192,7 +192,7 @@ public class HMM {
 	}
 
 	/* Reads through the file and generates a sentiment bigram model, and updates
-	 *  emission feature counts */
+	 * emission feature counts */
 	public ArrayList<ArrayList<ArrayList<ArrayList<String>>>> readFile(String fileLoc) {
 
 		// Lists of paragraphs and sentences
@@ -217,7 +217,7 @@ public class HMM {
 				// Read current line, skipping over if a review header [xxxx/xx],
 				// and breaking the loop if the end has been reached
 				String line= br.readLine();
-				//				System.out.println(line.length() + " " + line);
+				// System.out.println(line.length() + " " + line);
 
 				while(line.length()==0 || !line.trim().endsWith(">")) {
 
@@ -234,7 +234,7 @@ public class HMM {
 							paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 							sentences = new ArrayList<ArrayList<String>>();
 						}
-					} 
+					}
 					line= br.readLine();
 					if(line==null) break;
 				}
@@ -276,7 +276,7 @@ public class HMM {
 		} catch(IOException io) {
 		}
 
-		return documents;		
+		return documents;	
 	}
 
 	/* Generates the sentiment bigrams, taking care to not treat last sentiment of a review + first sentiment of
@@ -285,13 +285,13 @@ public class HMM {
 	public void sentimentModel() {
 		for (ArrayList<ArrayList<ArrayList<String>>> review : documents) {
 			for (int i = 0; i < review.size(); i++) { // traversing review by paragraph
-				//				System.out.println("Paragraph " + i);
+				// System.out.println("Paragraph " + i);
 				for (int j = 0; j < review.get(i).size(); j++) { // traversing paragraph by sentence
-					//					System.out.println("Sentence " + j);
+					// System.out.println("Sentence " + j);
 					ArrayList<String> currSent = null;
 					ArrayList<String> nextSent = null;
 					if (i == review.size()-1 && j == review.get(i).size()-1) { // if last sentence of review
-						//						System.out.println(review.get(i));
+						// System.out.println(review.get(i));
 						continue;
 					}
 					else if (j != review.get(i).size()-1) { // if not last sentence of a paragraph
@@ -308,7 +308,7 @@ public class HMM {
 					if (!transitions.containsKey(current)){
 						HashMap<String, Double> sub = new HashMap<String,Double>();
 						sub.put(next, 1.0);
-						transitions.put(current, sub);						
+						transitions.put(current, sub);	
 					} else if (!transitions.get(current).containsKey(next)){
 						HashMap<String, Double> sub = transitions.get(current);
 						sub.put(next, 1.0);
@@ -338,7 +338,7 @@ public class HMM {
 			return (double)transitions.get(sentiment1).get(sentiment2)/(double)sum(transitions.get(sentiment1).values());
 		}
 
-		else return 0.0; 
+		else return 0.0;
 	}
 
 	private double findPercent(String sentiment) {
@@ -346,7 +346,7 @@ public class HMM {
 	}
 
 	private double sumInner( HashMap<String, HashMap<String, Double>> values) {
-		double sum= 0.0; 
+		double sum= 0.0;
 		for (HashMap<String, Double> i : values.values()){
 			for (Double j : i.values()){
 				sum = sum + j;
@@ -357,7 +357,7 @@ public class HMM {
 
 	/* Sums a collection. */
 	private double sum(Collection<Double> values) {
-		double sum= 0.0; 
+		double sum= 0.0;
 		for (Double i:values)
 			sum = sum + i;
 		return sum;
@@ -394,7 +394,7 @@ public class HMM {
 			System.out.println("That file doesn't exist. Try again.");
 		} catch(IOException d) {
 			System.out.println(d.getMessage());
-		}		
+		}	
 
 		if (br != null && out != null) {
 			boolean firstParagraph = true;
@@ -426,7 +426,7 @@ public class HMM {
 							paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 							sentences = new ArrayList<ArrayList<String>>();
 						}
-					} 
+					}
 
 					try {
 						line= br.readLine();
@@ -483,7 +483,7 @@ public class HMM {
 		}
 		return testDocuments;
 	}
-	
+
 	public void BruteForce(ArrayList<ArrayList<ArrayList<String>>> review) {
 		Double runningProb = 1.0;
 		ArrayList<String> path = new ArrayList<String>();
@@ -494,7 +494,7 @@ public class HMM {
 			recurse(i+"", path, runningProb, review, 1);
 		}
 	}
-	
+
 	private void recurse(String string, ArrayList<String> path,	Double runningProb, ArrayList<ArrayList<ArrayList<String>>> review,	int sentNo) {
 		if (sentenceCount(review)==sentNo){
 			if(runningProb>BEST_PROB){
@@ -503,11 +503,11 @@ public class HMM {
 			}
 			return;
 		}
-		
+
 		for(int i=-2;i<=2;i++){
 			ArrayList<String> runPath = (ArrayList<String>) path.clone();
 			runPath.add(i+"");
-			runningProb+=ep(findPercent(string,i+""))+emissions.sentProb(string,getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
+			runningProb+=ep(findPercent(string,i+""))+emissions.sentProb(i+"",getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
 			recurse(i+"", runPath, runningProb, review, sentNo+1);
 		}
 	}
@@ -515,7 +515,7 @@ public class HMM {
 	public HashMap<ArrayList<String>, String> getSentiments() {
 		return sentiments;
 	}
-	
+
 	public HashMap<ArrayList<String>, String> getResults() {
 		return testSentiments;
 	}
