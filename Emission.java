@@ -10,8 +10,6 @@ public class Emission {
 	 *  and returns the ArrayList of feature HashMaps (Adjective counts, Adverb counts, and 
 	 *  Gerund counts in order of index) */
 	private HashMap<String, ArrayList<HashMap<String, Double>>> sentiments= new HashMap<String, ArrayList<HashMap<String, Double>>>();
-	/* Stoplist for finding words in the surrounding context. */
-	private ArrayList<String> stopList= new ArrayList<String>(Arrays.asList("DT"));
 	/* List of adjective tags. */
 	private ArrayList<String> adj= new ArrayList<String>(Arrays.asList("JJ","JJR","JJS"));
 	/* List of verb tags. */
@@ -20,10 +18,16 @@ public class Emission {
 	private ArrayList<String> adv= new ArrayList<String>(Arrays.asList("RB","RBR","RBS"));
 	/* List of noun tags. */
 	private ArrayList<String> nou= new ArrayList<String>(Arrays.asList("NN","NNS", "NNP", "NNPS"));
+	/* List of pronoun tags. */ 
+	private ArrayList<String> pro= new ArrayList<String>(Arrays.asList("PRP", "PRP$"));
+	/* Determiner tag. */
+	private String det= "DT";
 	/* Gerund tag. */
 	private String ger= "VBG";
+	/* Coordinating conjunction tag. */
+	private String con= "CC";
 	/* Values for unseen data */
-	private double[] DEFAULT = {0.0, 0.0, 0.0, 0.0, 0.0};
+	private double[] DEFAULT = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	/* HashMap for sense count. */
 	private HashMap<String, Double> sentimentCount= new HashMap<String, Double>();
 
@@ -66,8 +70,20 @@ public class Emission {
 			posWeight= Constants.VER_MULT;
 		} 
 		else if (nou.contains(pos)) {
-			index= 3;
+			index= 4;
 			posWeight= Constants.NOU_MULT;
+		}
+		else if (pro.contains(pos)) {
+			index= 5;
+			posWeight= Constants.PRO_MULT;
+		}
+		else if (det.equals(pos)) {
+			index= 6;
+			posWeight= Constants.DET_MULT;
+		}
+		else if (con.equals(pos)) {
+			index= 7;
+			posWeight= Constants.CON_MULT;
 		}
 		else return 0;
 		double b = sum(sentiments.get(sentiment).get(index).values());
@@ -138,6 +154,9 @@ public class Emission {
 		HashMap<String, Double> gerunds= null;
 		HashMap<String, Double> verbs= null;
 		HashMap<String, Double> nouns= null;
+		HashMap<String, Double> pronouns= null;
+		HashMap<String, Double> determiners= null;
+		HashMap<String, Double> conjunctions= null;
 		// Get current or create new feature hashmaps by situation
 		if (sentiments.containsKey(sentiment)) {
 			//Get current hashmaps of specified sentiment
@@ -146,6 +165,9 @@ public class Emission {
 			gerunds = sentiments.get(sentiment).get(2);
 			verbs= sentiments.get(sentiment).get(3);
 			nouns= sentiments.get(sentiment).get(4);
+			pronouns= sentiments.get(sentiment).get(5);
+			determiners= sentiments.get(sentiment).get(6);
+			conjunctions= sentiments.get(sentiment).get(7);
 		}
 		else {
 			// Create new hashmaps for new sentiment
@@ -154,6 +176,9 @@ public class Emission {
 			gerunds = new HashMap<String, Double>();
 			verbs= new HashMap<String, Double>();
 			nouns= new HashMap<String, Double>();
+			pronouns= new HashMap<String, Double>();
+			determiners= new HashMap<String, Double>();
+			conjunctions= new HashMap<String, Double>();
 		}
 		ArrayList<HashMap<String,Double>> features = new ArrayList<HashMap<String,Double>>();
 		
@@ -189,6 +214,24 @@ public class Emission {
 				} else {
 					nouns.put(sentence.get(i), nouns.get(sentence.get(i))+1);
 				}
+			} else if(pro.contains(pos.get(i))) {
+				if (!pronouns.containsKey(sentence.get(i))) {
+					pronouns.put(sentence.get(i), 1.0);
+				} else {
+					pronouns.put(sentence.get(i), pronouns.get(sentence.get(i))+1);
+				}
+			} else if(det.equals(pos.get(i))) {
+				if (!determiners.containsKey(sentence.get(i))) {
+					determiners.put(sentence.get(i), 1.0);
+				} else {
+					determiners.put(sentence.get(i), determiners.get(sentence.get(i))+1);
+				}
+			} else if(con.equals(pos.get(i))) {
+				if (!conjunctions.containsKey(sentence.get(i))) {
+					conjunctions.put(sentence.get(i), 1.0);
+				} else {
+					conjunctions.put(sentence.get(i), conjunctions.get(sentence.get(i))+1);
+				}
 			}
 		}
 		// Update sentiment count
@@ -204,6 +247,9 @@ public class Emission {
 		features.add(gerunds);
 		features.add(verbs);
 		features.add(nouns);
+		features.add(pronouns);
+		features.add(determiners);
+		features.add(conjunctions);
 		sentiments.put(sentiment, features);
 	}
 
