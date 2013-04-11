@@ -152,7 +152,7 @@ public class HMM {
 			PrintWriter out = new PrintWriter(outFile);
 
 			for (Double i : prediction){
-				out.println(i);
+				out.println((int)(double)i);
 			}
 			out.close();
 		} catch (IOException e){
@@ -476,40 +476,26 @@ public class HMM {
 		return testDocuments;
 	}
 	
-//	public ArrayList<String> recurse(String s, int sentenceNumber, int numSentences, ArrayList<ArrayList<ArrayList<String>>> review, Double runningProb, Double best, ArrayList<String >path) {
-//		ArrayList<String> sentence = getSentence(review, sentenceNumber);
-//		ArrayList<String> sentimentList = new ArrayList<String>();
-//		sentimentList.add("-2");
-//		sentimentList.add("-1");
-//		sentimentList.add("0");
-//		sentimentList.add("1");
-//		sentimentList.add("2");
-//		if (sentenceNumber == numSentences) {
-//			if (runningProb > best) {
-//				return path;
-//			}
-//			else return path;
-//		}
-//		else {
-//			for (String sentiment: sentimentList) {
-//				return runningProb * recurse(sentiment, sentenceNumber + 1, numSentences, review, runningProb, best);
-//			}
-//		}
-//	}
-//	
-//	public void BruteForce() {
-//		ArrayList<String> path = new ArrayList<String>();
-//		for (ArrayList<ArrayList<ArrayList<String>>> review : testDocuments) {
-//			Double best = 0.0;
-//			Double runningProb = findPercent(sentiments.get(getSentence(review, 0)));
-//			int numSentences = sentenceCount(review);
-//			int i = 0;
-//			Double prob = recurse(sentiments.get(getSentence(review, 0)), i, numSentences, review, runningProb, best);
-//		}
-//		
-//		
-//	}
+	/*public void BruteForce(ArrayList<ArrayList<ArrayList<String>>> review) {
+		Double runningProb = 1.0;
+		ArrayList<String> path = new ArrayList<String>();
+		for(int i=-2;i<=2;i++){
+			path.clear();
+			path.add(i+"");
+			runningProb=ep(findPercent(i+""))+emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
+			recurse(i+"", path, runningProb, review, 1);
+		}
+	}
 	
+	private void recurse(String string, ArrayList<String> path,	Double runningProb, ArrayList<ArrayList<ArrayList<String>>> review,	int sentNo) {
+		for(int i=-2;i<=2;i++){
+			ArrayList<String> runPath = (ArrayList<String>) path.clone();
+			runPath.add(i+"");
+			runningProb=ep(findPercent(string,i+""))+emissions.sentProb(string,getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
+			recurse(i+"", path, runningProb, review, 1);
+		}
+	}*/
+
 	public HashMap<ArrayList<String>, String> getSentiments() {
 		return sentiments;
 	}

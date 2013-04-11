@@ -18,7 +18,7 @@ public class KFold {
 			HMM model = new HMM(trainFile, testFile, "./validation/predictions.txt");
 			d += check(testFile, "./validation/predictions.txt");
 		}
-		System.out.println(d/5 + "% accuracy");
+		System.out.println(d/5 + " AVG MSE");
 	}
 	
 	public static Double check(String originalFile, String predictionsFile) throws IOException {
