@@ -18,10 +18,12 @@ public class Emission {
 	private ArrayList<String> ver= new ArrayList<String>(Arrays.asList("VB","VBD","VBN","VBZ","VBP"));
 	/* List of adverb tags. */
 	private ArrayList<String> adv= new ArrayList<String>(Arrays.asList("RB","RBR","RBS"));
+	/* List of noun tags. */
+	private ArrayList<String> nou= new ArrayList<String>(Arrays.asList("NN","NNS", "NNP", "NNPS"));
 	/* Gerund tag. */
 	private String ger= "VBG";
 	/* Values for unseen data */
-	private double[] DEFAULT = {0.0, 0.0, 0.0, 0.0};
+	private double[] DEFAULT = {0.0, 0.0, 0.0, 0.0, 0.0};
 	/* HashMap for sense count. */
 	private HashMap<String, Double> sentimentCount= new HashMap<String, Double>();
 
@@ -62,6 +64,10 @@ public class Emission {
 		else if (ver.contains(pos)) {
 			index= 3;
 			posWeight= Constants.VER_MULT;
+		} 
+		else if (nou.contains(pos)) {
+			index= 3;
+			posWeight= Constants.NOU_MULT;
 		}
 		else return 0;
 		double b = sum(sentiments.get(sentiment).get(index).values());
@@ -131,6 +137,7 @@ public class Emission {
 		HashMap<String, Double> adverbs= null;
 		HashMap<String, Double> gerunds= null;
 		HashMap<String, Double> verbs= null;
+		HashMap<String, Double> nouns= null;
 		// Get current or create new feature hashmaps by situation
 		if (sentiments.containsKey(sentiment)) {
 			//Get current hashmaps of specified sentiment
@@ -138,6 +145,7 @@ public class Emission {
 			adverbs = sentiments.get(sentiment).get(1);
 			gerunds = sentiments.get(sentiment).get(2);
 			verbs= sentiments.get(sentiment).get(3);
+			nouns= sentiments.get(sentiment).get(4);
 		}
 		else {
 			// Create new hashmaps for new sentiment
@@ -145,6 +153,7 @@ public class Emission {
 			adverbs = new HashMap<String, Double>();
 			gerunds = new HashMap<String, Double>();
 			verbs= new HashMap<String, Double>();
+			nouns= new HashMap<String, Double>();
 		}
 		ArrayList<HashMap<String,Double>> features = new ArrayList<HashMap<String,Double>>();
 		
@@ -174,6 +183,12 @@ public class Emission {
 				} else {
 					verbs.put(sentence.get(i), verbs.get(sentence.get(i))+1);
 				}
+			} else if(nou.contains(pos.get(i))) {
+				if (!nouns.containsKey(sentence.get(i))) {
+					nouns.put(sentence.get(i), 1.0);
+				} else {
+					nouns.put(sentence.get(i), nouns.get(sentence.get(i))+1);
+				}
 			}
 		}
 		// Update sentiment count
@@ -188,6 +203,7 @@ public class Emission {
 		features.add(adverbs);
 		features.add(gerunds);
 		features.add(verbs);
+		features.add(nouns);
 		sentiments.put(sentiment, features);
 	}
 
