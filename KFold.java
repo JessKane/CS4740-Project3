@@ -10,17 +10,17 @@ public class KFold {
 	
 	public static void main(String[] args) throws IOException {
 		Double d = 0.0;
-		//String trainBase = "./validation/ScottRenshaw_train";
-		//String testBase = "./validation/ScottRenshaw_test";
-		String trainBase = "./validation/DennisSchwartz_train";
-		String testBase = "./validation/DennisSchwartz_test";		
+		String trainBase = "./validation/ScottRenshaw_train";
+		String testBase = "./validation/ScottRenshaw_test";
+		//String trainBase = "./validation/DennisSchwartz_train";
+		//String testBase = "./validation/DennisSchwartz_test";		
 		for (int i = 1; i <= 5; i++) {
 			String trainFile = trainBase + i + ".txt";
 			String testFile = testBase + i + ".txt";
 			HMM model = new HMM(trainFile, testFile, "./validation/predictions.txt");
 			d += check(testFile, "./validation/predictions.txt");
 		}
-		System.out.println(d/5 + " AVG MSE");
+		System.out.println(Math.pow(d/5,.5) + " AVG MSE");
 	}
 	
 	public static Double check(String originalFile, String predictionsFile) throws IOException {
