@@ -97,11 +97,11 @@ public class HMM {
 			T2[i+2][0]=0;
 		}
 
-		double innerProb,innerArg,maxProb=-100,maxArg=-100;
+		double innerProb=-Double.MAX_VALUE,innerArg=-Double.MAX_VALUE,maxProb=-Double.MAX_VALUE,maxArg=-Double.MAX_VALUE;
 
 		for (int i=1; i<sentenceCount(review); i++){
 			for (int j=-2; j<=2; j++){
-				maxProb=-100;maxArg=-100;
+				maxProb=-Double.MAX_VALUE;maxArg=-Double.MAX_VALUE;
 				for (int k=-2; k<=2; k++){
 					//innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
 					innerProb=T1[k+2][i-1]+ep(findPercent(k+"",j+""))+emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
@@ -118,7 +118,7 @@ public class HMM {
 			}
 		}
 
-		innerProb=0;maxProb=-100;maxArg=-100;innerArg=-100;
+		innerProb=-Double.MAX_VALUE;maxProb=-Double.MAX_VALUE;maxArg=-Double.MAX_VALUE;innerArg=-Double.MAX_VALUE;
 		for (int s=-2; s<=2; s++){
 			innerProb=T1[s+2][sentenceCount(review)-1];
 			if (innerProb>maxProb){
