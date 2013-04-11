@@ -57,12 +57,12 @@ public class Emission {
 			index= 2;
 			posWeight= Constants.GER_MULT;
 		}
-		else return 1;
+		else return 0;
 		double b = sum(sentiments.get(sentiment).get(index).values());
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
 		if(a==0 || b==0){
-			return 1;
+			return 0;
 		}
 		//System.out.println(sentiments.get(sentiment).get(index).containsKey(word));
 		//System.out.println(sentiment+" : "+pos+" : "+a +" : "+b +" : "+posWeight * a / b);
@@ -105,7 +105,7 @@ public class Emission {
 	
 	private double ep(double calcProb) {
 		double epsilon = .000001;
-		return epsilon+-Math.log(calcProb+epsilon);
+		return epsilon+Math.log(calcProb+epsilon);
 	}
 
 	/* Sums all values in the collection. */
