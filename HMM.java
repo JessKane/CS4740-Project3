@@ -36,6 +36,9 @@ public class HMM {
 	private HashMap<ArrayList<String>, List<CoreLabel>> testTokens = new HashMap<ArrayList<String>, List<CoreLabel>>();		// "full sentence":"list of tokens"
 
 	private String outputFile;
+	
+	private double BEST_PROB=-Double.MAX_VALUE;
+	private ArrayList<String> BEST_PATH = null;
 
 
 	/* Stanford NLP modelling pipeline, used in annotation. */
@@ -81,6 +84,11 @@ public class HMM {
 			}
 		}
 		System.out.println("Test Sentences stored: "+s);*/
+		
+		//BruteForce(testDocuments.get(0));
+		//for (String j : BEST_PATH){System.out.println(j);};
+		//System.out.println(BEST_PROB);
+		//viterbi(testDocuments.get(0));
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
 			viterbi(i);
 		}
@@ -476,7 +484,7 @@ public class HMM {
 		return testDocuments;
 	}
 	
-	/*public void BruteForce(ArrayList<ArrayList<ArrayList<String>>> review) {
+	public void BruteForce(ArrayList<ArrayList<ArrayList<String>>> review) {
 		Double runningProb = 1.0;
 		ArrayList<String> path = new ArrayList<String>();
 		for(int i=-2;i<=2;i++){
@@ -488,13 +496,21 @@ public class HMM {
 	}
 	
 	private void recurse(String string, ArrayList<String> path,	Double runningProb, ArrayList<ArrayList<ArrayList<String>>> review,	int sentNo) {
+		if (sentenceCount(review)==sentNo){
+			if(runningProb>BEST_PROB){
+				BEST_PROB=runningProb;
+				BEST_PATH=path;
+			}
+			return;
+		}
+		
 		for(int i=-2;i<=2;i++){
 			ArrayList<String> runPath = (ArrayList<String>) path.clone();
 			runPath.add(i+"");
-			runningProb=ep(findPercent(string,i+""))+emissions.sentProb(string,getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
-			recurse(i+"", path, runningProb, review, 1);
+			runningProb+=ep(findPercent(string,i+""))+emissions.sentProb(string,getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
+			recurse(i+"", runPath, runningProb, review, sentNo+1);
 		}
-	}*/
+	}
 
 	public HashMap<ArrayList<String>, String> getSentiments() {
 		return sentiments;

@@ -10,8 +10,10 @@ public class KFold {
 	
 	public static void main(String[] args) throws IOException {
 		Double d = 0.0;
-		String trainBase = "./validation/ScottRenshaw_train";
-		String testBase = "./validation/ScottRenshaw_test";
+		//String trainBase = "./validation/ScottRenshaw_train";
+		//String testBase = "./validation/ScottRenshaw_test";
+		String trainBase = "./validation/DennisSchwartz_train";
+		String testBase = "./validation/DennisSchwartz_test";		
 		for (int i = 1; i <= 5; i++) {
 			String trainFile = trainBase + i + ".txt";
 			String testFile = testBase + i + ".txt";
