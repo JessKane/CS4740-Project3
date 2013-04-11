@@ -1,6 +1,6 @@
 
 public class Constants {
-	public static final double ADJ_MULT = 5;
+	public static final double ADJ_MULT = 3;
 	public static final double ADV_MULT = 3;
 	public static final double GER_MULT = 3;
 	public static final double VER_MULT = 3;
