@@ -19,7 +19,7 @@ public class Emission {
 	/* Gerund tag. */
 	private String ger= "VBG";
 	/* Values for unseen data */
-	private double[] DEFAULT = {0.0, 0.0, 0.0};
+	private double[] DEFAULT = {0,0,0};
 	/* HashMap for sense count. */
 	private HashMap<String, Double> sentimentCount= new HashMap<String, Double>();
 
@@ -38,7 +38,7 @@ public class Emission {
 	public double calcProb(String sentiment, String pos, String word) {
 		int index= 0; 
 		//Part of speech weight, to be taken from Constants
-		double posWeight= 0;
+		double posWeight= 1;
 		//Determines feature index given the word's pos. If unknown, defaults to 0
 		if (adj.contains(pos)) {
 			index= 0;
@@ -62,6 +62,8 @@ public class Emission {
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
 		if(a==0 || b==0) return 1;
+		//System.out.println(sentiments.get(sentiment).get(index).containsKey(word));
+		//System.out.println(sentiment+" : "+pos+" : "+a +" : "+b +" : "+posWeight * a / b);
 		return posWeight * a / b;
 	}
 	
@@ -90,18 +92,14 @@ public class Emission {
 	public double sentProb(String sentiment, ArrayList<String> sentence, ArrayList<String> pos) {
 		double prob= 1;
 		for (int i= 0; i<sentence.size(); i++) {
-			//prob= 10*prob*calcProb(sentiment, pos.get(i), sentence.get(i));
-			prob= prob+ep(calcProb(sentiment, pos.get(i), sentence.get(i)));
+			prob= prob*calcProb(sentiment, pos.get(i), sentence.get(i));
+			//System.out.println(prob+" : "+calcProb(sentiment, pos.get(i), sentence.get(i)));
 		}
-		//System.out.println(prob);
+		//System.out.println("End Prob: "+prob);
+		//System.out.println(sentence);
 		return prob;
 	}
 	
-	private double ep(double calcProb) {
-		double epsilon = .000001;
-		return epsilon+-Math.log(calcProb+epsilon);
-	}
-
 	/* Sums all values in the collection. */
 	private double sum(Collection<Double> values) {
 		double sum= 0.0; 
