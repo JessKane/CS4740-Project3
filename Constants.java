@@ -17,4 +17,8 @@ public class Constants {
 	// are adjectives. 
 	public static final double SUPER_MULT = 2; 
 
+	
+	
+	public static final double AUTHOR_GOOD = 8;
+	public static final double AUTHOR_BAD = 8;
 }

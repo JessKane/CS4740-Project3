@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Emission {
@@ -35,9 +36,28 @@ public class Emission {
 	/* HashMap for sense count. */
 	private HashMap<String, Double> sentimentCount= new HashMap<String, Double>();
 
+	
+	private String author = "";
+	private ArrayList<String> scottGood = new ArrayList<String>(Arrays.asList("appealing", "comic", 
+			"best", "good", "wonderful", "effective", "perfect"));
+	private ArrayList<String> scottBad = new ArrayList<String>(Arrays.asList("few", "big", "moral", 
+			"least", "impossible", "dead", "funny", "only", "central", "final", "bad", "such", "real", 
+			"worse", "wrong", "absurd", "simple", "hard", "predictable", "little", "silly", "always", 
+			"simply", "unfortunately", "yet", "enough", "long", "far", "generally", "maybe", "already", 
+			"really", "actually", "almost", "vaguely", "perhaps", "away", "instead", "finds", "lost", 
+			"play", "turn", "seem", "imagine", "appears", "feel", "feels", "seems", "want", "turns"));
+	private ArrayList<String> dennisGood = new ArrayList<String>(Arrays.asList(
+			"noir", "right", "enjoyable", "entertaining", "excellent", "new", "considerable", "superb", 
+			"better", "tremendous", "emotional", "worth", "subject", "beautiful", "true", "subtle", "able", 
+			"important", "human", "intelligent", "brilliant", "difficult", "american", "best", "young", 
+			"original", "dark", "innovative", "natural", "outstanding", "certain", "visual", "modern", 
+			"splendid", "perfect", "special", "well", "especially"));
+	private List<String> dennisBad = new ArrayList<String>(Arrays.asList( "bad", "political", "really", "almost"));
+
+	
 	/* Create an instance of Emission. */
-	public Emission() {
-		
+	public Emission(String authorName) {
+		author = authorName;
 	}
 	
 	/* Return sentiment data structure. */
@@ -51,6 +71,34 @@ public class Emission {
 		int index= 0; 
 		//Part of speech weight, to be taken from Constants
 		double posWeight= 1;
+		
+		// weight author specific words
+		if (author == "dennis") {
+			if ((sentiment == "1") || (sentiment == "2")) {
+				if (dennisGood.contains(word)) {
+					posWeight = posWeight*Constants.AUTHOR_GOOD;
+				}
+			}
+			if ((sentiment == "-1") || (sentiment == "-2")) {
+				if (dennisBad.contains(word)) {
+					posWeight = posWeight*Constants.AUTHOR_BAD;
+				}
+			}
+		} else if (author == "scott") {
+			if ((sentiment == "1") || (sentiment == "2")) {
+				if (scottGood.contains(word)) {
+					posWeight = posWeight*Constants.AUTHOR_GOOD;
+				}
+			}
+			if ((sentiment == "-1") || (sentiment == "-2")) {
+				if (scottBad.contains(word)) {
+					posWeight = posWeight*Constants.AUTHOR_BAD;
+				}
+			}
+		}
+		
+		
+		
 		//Determines feature index given the word's pos. If unknown, defaults to 0
 		if (adj.contains(pos)) {
 			index= 0;

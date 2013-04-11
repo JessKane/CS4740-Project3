@@ -21,7 +21,7 @@ public class HMM {
 	/* Bigram model for transition frequencies */
 	private HashMap<String,HashMap<String, Double>> transitions = new HashMap<String,HashMap<String, Double>>();
 	/* Emissions object, still working on this. */
-	private Emission emissions= new Emission();
+	private Emission emissions= null;
 
 	/* List of strings = sentence. List of sentences = paragraph. List of paragraphs = review. List of reviews = entire document */
 	private ArrayList<ArrayList<ArrayList<ArrayList<String>>>> documents = new ArrayList<ArrayList<ArrayList<ArrayList<String>>>>();
@@ -44,9 +44,12 @@ public class HMM {
 	/* Stanford NLP modelling pipeline, used in annotation. */
 	protected StanfordCoreNLP pipeline;
 
+	String HMMAuthorName = "";
 
 	/* Constructs a Parse object with transition frequencies */
-	public HMM(String trainLoc, String testLoc, String out) {
+	public HMM(String trainLoc, String testLoc, String out, String authorName) {
+		HMMAuthorName = authorName;
+		emissions = new Emission(authorName);
 		readFile(trainLoc);
 		sentimentModel();
 		parseTestData(testLoc);
@@ -92,6 +95,51 @@ System.out.println("Test Sentences stored: "+s);*/
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
 			viterbi(i);
 		}
+		
+		
+//		System.out.println("All positive 2.\n");
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("2").get(0).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("2").get(1).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("2").get(2).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("2").get(3).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		
+//		System.out.println("All negative 2.\n");
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("-2").get(0).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("-2").get(1).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("-2").get(2).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
+//		for (Map.Entry<String, Double> entry : emissions.getSentiments().get("-2").get(3).entrySet()) {
+//			if (entry.getValue() >= 5) {
+//				System.out.print(" \""+ entry.getKey() +"\", ");
+//			}
+//		}
 	}
 
 	public void viterbi(ArrayList<ArrayList<ArrayList<String>>> review){
