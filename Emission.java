@@ -61,7 +61,7 @@ public class Emission {
 		double b = sum(sentiments.get(sentiment).get(index).values());
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
-		if(a==0 && b==0) return 1;
+		if(a==0 || b==0) return 1;
 		return posWeight * a / b;
 	}
 	
@@ -90,12 +90,18 @@ public class Emission {
 	public double sentProb(String sentiment, ArrayList<String> sentence, ArrayList<String> pos) {
 		double prob= 1;
 		for (int i= 0; i<sentence.size(); i++) {
-			prob= 10*prob*calcProb(sentiment, pos.get(i), sentence.get(i));
+			//prob= 10*prob*calcProb(sentiment, pos.get(i), sentence.get(i));
+			prob= prob+ep(calcProb(sentiment, pos.get(i), sentence.get(i)));
 		}
 		//System.out.println(prob);
 		return prob;
 	}
 	
+	private double ep(double calcProb) {
+		double epsilon = .000001;
+		return epsilon+-Math.log(calcProb+epsilon);
+	}
+
 	/* Sums all values in the collection. */
 	private double sum(Collection<Double> values) {
 		double sum= 0.0; 

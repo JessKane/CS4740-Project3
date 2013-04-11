@@ -18,14 +18,13 @@ public class KFold {
 			HMM model = new HMM(trainFile, testFile, "./validation/predictions.txt");
 			d += check(testFile, "./validation/predictions.txt");
 		}
-		//HMM model = new HMM("data/DennisSchwartz_train.txt","data/DennisSchwartz_train.txt","data/DennisSchwartz_train_results.txt");
-		//d += check("data/DennisSchwartz_train.txt", "data/DennisSchwartz_train_results.txt");
 		System.out.println(d/5 + "% accuracy");
 	}
 	
 	public static Double check(String originalFile, String predictionsFile) throws IOException {
 		Double numCorrect = 0.0;
 		Double numLines = 0.0;
+		Double error=0.0;
 		BufferedReader original = new BufferedReader(new FileReader(originalFile));
 		BufferedReader predictions = new BufferedReader(new FileReader(predictionsFile));
 		
@@ -42,15 +41,18 @@ public class KFold {
 				System.out.print(correctSentiment+"\t");
 				System.out.println((int)Double.parseDouble(predictionLine));
 				numLines++;
-				if (Integer.parseInt(correctSentiment)==((int)Double.parseDouble(predictionLine))) {
-					numCorrect++;
-				}
+				//if (Integer.parseInt(correctSentiment)==((int)Double.parseDouble(predictionLine))) {
+				//	numCorrect++;
+				//}
+				error+=Math.pow(Integer.parseInt(correctSentiment)-((int)Double.parseDouble(predictionLine)),2);
+				
 			}
 		}
 		original.close();
 		predictions.close();
 
-		return numCorrect / numLines;
+		//return numCorrect / numLines;
+		return error / numLines;
 	}
 
 }

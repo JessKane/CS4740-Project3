@@ -48,6 +48,15 @@ public class HMM {
 		sentimentModel();
 		parseTestData(testLoc);
 		outputFile=out;
+		write(new double[0],false);
+		
+		/*double summer=0;
+		for (int q=-2;q<=2;q++){
+			for(int w = -2; w<=2; w++){
+				summer+=findPercent(w+"",q+"");
+			}
+		}
+		System.out.println(summer);*/
 		/*System.out.println("documents size: " + documents.size());
 		System.out.println("review 1 # of paragraphs: " + documents.get(0).size());
 		sentimentModel();
@@ -62,6 +71,11 @@ public class HMM {
 		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 
 		System.out.println();*/
+		int s=0;
+		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
+			s+=sentenceCount(i);
+		}
+		System.out.println("Sentences stored: "+s);
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
 			viterbi(i);
 		}
@@ -73,7 +87,8 @@ public class HMM {
 
 
 		for (int i=-2; i<=2; i++){
-			T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
+			//T1[i+2][0]=findPercent(i+"")*emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
+			T1[i+2][0]=ep(findPercent(i+""))+emissions.sentProb(i+"",getSentence(review,0), testPOSs.get(getSentence(review,0)));
 			T2[i+2][0]=0;
 		}
 
@@ -83,7 +98,9 @@ public class HMM {
 			for (int j=-2; j<=2; j++){
 				maxProb=-100;maxArg=-100;
 				for (int k=-2; k<=2; k++){
-					innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
+					//innerProb=T1[k+2][i-1]*findPercent(k+"",j+"")*emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
+					innerProb=T1[k+2][i-1]+ep(findPercent(k+"",j+""))+emissions.sentProb(j+"",getSentence(review,i),testPOSs.get(getSentence(review,i)));
+
 					innerArg=k;
 
 					if (innerProb>maxProb){
@@ -111,7 +128,12 @@ public class HMM {
 			prediction[i-1]=T2[(int) prediction[i]+2][i];
 		}
 		//print(prediction);
-		write(prediction);
+		write(prediction,true);
+	}
+
+	private double ep(double calcProb) {
+		double epsilon = .000001;
+		return epsilon+-Math.log(calcProb+epsilon);
 	}
 
 	private void print(double[] prediction) {
@@ -119,9 +141,9 @@ public class HMM {
 			System.out.println(i);
 	}
 	
-	private void write(double[] prediction) {
+	private void write(double[] prediction, boolean append) {
 		try {
-			FileWriter outFile = new FileWriter(outputFile,true);
+			FileWriter outFile = new FileWriter(outputFile,append);
 			PrintWriter out = new PrintWriter(outFile);
 			
 			for (Double i : prediction){
@@ -331,6 +353,7 @@ public class HMM {
 	 * Parse the test data.
 	 */
 	public ArrayList<ArrayList<ArrayList<ArrayList<String>>>> parseTestData (String filename) {
+		int count=0;
 		// Lists of paragraphs and sentences
 		ArrayList<ArrayList<ArrayList<String>>> paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 		ArrayList<ArrayList<String>> sentences = new ArrayList<ArrayList<String>>();
@@ -430,8 +453,9 @@ public class HMM {
 
 				//Update sentiment tables
 				sentences.add(sentence);
+				count++;
 			}
-
+			System.out.println("Sentences parsed: "+count);
 			//Close input/output stream
 			try {
 				br.close();
