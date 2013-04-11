@@ -507,7 +507,7 @@ public class HMM {
 		for(int i=-2;i<=2;i++){
 			ArrayList<String> runPath = (ArrayList<String>) path.clone();
 			runPath.add(i+"");
-			runningProb+=ep(findPercent(string,i+""))+emissions.sentProb(string,getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
+			runningProb+=ep(findPercent(string,i+""))+emissions.sentProb(i+"",getSentence(review,sentNo),testPOSs.get(getSentence(review,sentNo)));
 			recurse(i+"", runPath, runningProb, review, sentNo+1);
 		}
 	}
