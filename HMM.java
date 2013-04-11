@@ -63,14 +63,15 @@ public class HMM {
 		System.out.println(emissions.getSentiments().get("-2").get(0).get("nice"));
 		System.out.println(emissions.calcProb("-2","JJ","nice"));
 		System.out.println();
-		int r=1,s=6;
+		*/
+		int r=0,s=0;
 		System.out.println(emissions.sentProb(-2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 		System.out.println(emissions.sentProb(-1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 		System.out.println(emissions.sentProb(0+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 		System.out.println(emissions.sentProb(1+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 
-		System.out.println();*/
+		System.out.println();
 		/*int s=0;
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
 			for (ArrayList<ArrayList<String>> para : i){

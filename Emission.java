@@ -53,7 +53,7 @@ public class Emission {
 			index= 1;
 			posWeight= Constants.ADV_MULT;
 		}
-		else if (ger.contains(pos)) {
+		else if (ger.equals(pos)) {
 			index= 2;
 			posWeight= Constants.GER_MULT;
 		}
@@ -61,7 +61,9 @@ public class Emission {
 		double b = sum(sentiments.get(sentiment).get(index).values());
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
-		if(a==0 || b==0) return 1;
+		if(a==0 || b==0){
+			return 1;
+		}
 		//System.out.println(sentiments.get(sentiment).get(index).containsKey(word));
 		//System.out.println(sentiment+" : "+pos+" : "+a +" : "+b +" : "+posWeight * a / b);
 		return posWeight * a / b;
@@ -90,10 +92,11 @@ public class Emission {
 	
 	/* Returns the probability of a sentence being the specified sentiment. */
 	public double sentProb(String sentiment, ArrayList<String> sentence, ArrayList<String> pos) {
-		double prob= 1;
+		double prob= 0;
 		for (int i= 0; i<sentence.size(); i++) {
 			//prob= 10*prob*calcProb(sentiment, pos.get(i), sentence.get(i));
 			prob= prob+ep(calcProb(sentiment, pos.get(i), sentence.get(i)));
+
 		}
 		//System.out.println("End Prob: "+prob);
 		//System.out.println(sentence);
@@ -108,8 +111,9 @@ public class Emission {
 	/* Sums all values in the collection. */
 	private double sum(Collection<Double> values) {
 		double sum= 0.0; 
-		for (Double d:values)
+		for (Double d:values){
 			sum += d;
+		}
 		return sum;
 	}
 
