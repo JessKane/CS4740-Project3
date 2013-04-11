@@ -71,11 +71,15 @@ public class HMM {
 		System.out.println(emissions.sentProb(2+"",getSentence(documents.get(r),s),POSs.get(getSentence(documents.get(r),s))));
 
 		System.out.println();*/
-		int s=0;
+		/*int s=0;
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
-			s+=sentenceCount(i);
+			for (ArrayList<ArrayList<String>> para : i){
+				for (ArrayList<String> sent : para){
+					s++;
+				}
+			}
 		}
-		System.out.println("Sentences stored: "+s);
+		System.out.println("Test Sentences stored: "+s);*/
 		for (ArrayList<ArrayList<ArrayList<String>>> i: testDocuments){
 			viterbi(i);
 		}
@@ -206,16 +210,17 @@ public class HMM {
 				String line= br.readLine();
 				//				System.out.println(line.length() + " " + line);
 
-				while(line.length()==0 || line.charAt(line.length()-1) != '>') {
+				while(line.length()==0 || !line.trim().endsWith(">")) {
 
 					if (line.length()==0) {
 						// Do nothing
 					}
 					// If it's [xxxx/xx], switch documents
-					else if (line.charAt(line.length()-1) != '>') {
+					else if (!line.trim().endsWith(">")) {
 						if (firstParagraph) {
 							firstParagraph = false;
 						} else {
+							paragraphs.add(sentences);
 							documents.add(paragraphs);
 							paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 							sentences = new ArrayList<ArrayList<String>>();
@@ -353,7 +358,7 @@ public class HMM {
 	 * Parse the test data.
 	 */
 	public ArrayList<ArrayList<ArrayList<ArrayList<String>>>> parseTestData (String filename) {
-		int count=0;
+		//int count=0;
 		// Lists of paragraphs and sentences
 		ArrayList<ArrayList<ArrayList<String>>> paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 		ArrayList<ArrayList<String>> sentences = new ArrayList<ArrayList<String>>();
@@ -396,17 +401,18 @@ public class HMM {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				while(line.length()==0 || line.charAt(line.length()-1) != '>') {
+				while(line.length()==0 || !line.trim().endsWith(">")) {
 
 					if (line.length()==0) {
 						// do nothing
 					}
 
 					// If it's [xxxx/xx], switch documents
-					else if (line.charAt(line.length()-1) != '>') {
+					else if (!line.trim().endsWith(">")) {
 						if (firstParagraph) {
 							firstParagraph = false;
 						} else {
+							paragraphs.add(sentences);
 							testDocuments.add(paragraphs);
 							paragraphs = new ArrayList<ArrayList<ArrayList<String>>>();
 							sentences = new ArrayList<ArrayList<String>>();
@@ -453,9 +459,9 @@ public class HMM {
 
 				//Update sentiment tables
 				sentences.add(sentence);
-				count++;
+				//count++;
 			}
-			System.out.println("Sentences parsed: "+count);
+			//System.out.println("Sentences parsed: "+count);
 			//Close input/output stream
 			try {
 				br.close();

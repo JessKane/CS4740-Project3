@@ -38,8 +38,8 @@ public class KFold {
 				int endBracket = originalLine.lastIndexOf('>');
 				int startBracket = originalLine.lastIndexOf('<');
 				String correctSentiment = originalLine.substring(startBracket+1, endBracket);
-				System.out.print(correctSentiment+"\t");
-				System.out.println((int)Double.parseDouble(predictionLine));
+				//System.out.print(correctSentiment+"\t");
+				//System.out.println((int)Double.parseDouble(predictionLine));
 				numLines++;
 				//if (Integer.parseInt(correctSentiment)==((int)Double.parseDouble(predictionLine))) {
 				//	numCorrect++;
