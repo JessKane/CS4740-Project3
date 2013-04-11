@@ -26,8 +26,12 @@ public class Emission {
 	private String ger= "VBG";
 	/* Coordinating conjunction tag. */
 	private String con= "CC";
+	/* Subordinating conjunction tag. */
+	private String sub= "IN";
+	/* Interjection tag. */
+	private String inj= "UH";
 	/* Values for unseen data */
-	private double[] DEFAULT = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	private double[] DEFAULT = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	/* HashMap for sense count. */
 	private HashMap<String, Double> sentimentCount= new HashMap<String, Double>();
 
@@ -84,8 +88,19 @@ public class Emission {
 		else if (con.equals(pos)) {
 			index= 7;
 			posWeight= Constants.CON_MULT;
+		} 
+		else if (sub.equals(pos)) {
+			index= 8;
+			posWeight= Constants.SUB_MULT;
 		}
-		else return 0;
+		else if (inj.equals(pos)) {
+			index= 9;
+			posWeight= Constants.INJ_MULT;
+		}
+		else {
+			index= 10;
+			posWeight= Constants.WTF_MULT;
+		}
 		double b = sum(sentiments.get(sentiment).get(index).values());
 		double a = sentiments.get(sentiment).get(index).containsKey(word) ? 
 				sentiments.get(sentiment).get(index).get(word) : DEFAULT[index];
@@ -157,6 +172,9 @@ public class Emission {
 		HashMap<String, Double> pronouns= null;
 		HashMap<String, Double> determiners= null;
 		HashMap<String, Double> conjunctions= null;
+		HashMap<String, Double> subordinates= null;
+		HashMap<String, Double> interjections= null;
+		HashMap<String, Double> remainder= null;
 		// Get current or create new feature hashmaps by situation
 		if (sentiments.containsKey(sentiment)) {
 			//Get current hashmaps of specified sentiment
@@ -168,6 +186,9 @@ public class Emission {
 			pronouns= sentiments.get(sentiment).get(5);
 			determiners= sentiments.get(sentiment).get(6);
 			conjunctions= sentiments.get(sentiment).get(7);
+			subordinates= sentiments.get(sentiment).get(8);
+			interjections= sentiments.get(sentiment).get(9);
+			remainder= sentiments.get(sentiment).get(10);
 		}
 		else {
 			// Create new hashmaps for new sentiment
@@ -179,6 +200,9 @@ public class Emission {
 			pronouns= new HashMap<String, Double>();
 			determiners= new HashMap<String, Double>();
 			conjunctions= new HashMap<String, Double>();
+			subordinates= new HashMap<String, Double>();
+			interjections= new HashMap<String, Double>();
+			remainder= new HashMap<String, Double>();
 		}
 		ArrayList<HashMap<String,Double>> features = new ArrayList<HashMap<String,Double>>();
 		
@@ -232,6 +256,24 @@ public class Emission {
 				} else {
 					conjunctions.put(sentence.get(i), conjunctions.get(sentence.get(i))+1);
 				}
+			} else if(sub.equals(pos.get(i))) {
+				if (!subordinates.containsKey(sentence.get(i))) {
+					subordinates.put(sentence.get(i), 1.0);
+				} else {
+					subordinates.put(sentence.get(i), subordinates.get(sentence.get(i))+1);
+				}
+			} else if(inj.equals(pos.get(i))) {
+				if (!interjections.containsKey(sentence.get(i))) {
+					interjections.put(sentence.get(i), 1.0);
+				} else {
+					interjections.put(sentence.get(i), interjections.get(sentence.get(i))+1);
+				}
+			} else {
+				if (!remainder.containsKey(sentence.get(i))) {
+					remainder.put(sentence.get(i), 1.0);
+				} else {
+					remainder.put(sentence.get(i), remainder.get(sentence.get(i))+1);
+				}
 			}
 		}
 		// Update sentiment count
@@ -250,6 +292,9 @@ public class Emission {
 		features.add(pronouns);
 		features.add(determiners);
 		features.add(conjunctions);
+		features.add(subordinates);
+		features.add(interjections);
+		features.add(remainder);
 		sentiments.put(sentiment, features);
 	}
 
